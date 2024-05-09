@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 import web.springBootSecurityProject.models.User;
-import web.springBootSecurityProject.services.UserServiceImpl;
+import web.springBootSecurityProject.services.user.UserServiceImpl;
 
 import java.util.Optional;
 

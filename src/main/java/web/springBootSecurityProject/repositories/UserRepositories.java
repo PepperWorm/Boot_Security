@@ -10,8 +10,8 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepositories extends JpaRepository<User, Integer> {
-    @Query("SELECT DISTINCT u FROM User u JOIN FETCH u.roles WHERE u.username = :username")
+    @Query("SELECT  u FROM User u JOIN FETCH u.roles WHERE u.username = :username")
     Optional<User> findByUsername(String username);
-    @Query("SELECT DISTINCT u FROM User u JOIN FETCH u.roles")
+    @Query("SELECT  u FROM User u JOIN FETCH u.roles")
     List<User> getAllUsers();
 }

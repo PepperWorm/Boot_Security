@@ -1,0 +1,16 @@
+web/springBootSecurityProject/config/SuccessUserHandler.class
+web/springBootSecurityProject/util/UserValidator.class
+web/springBootSecurityProject/services/user/UsersDetailService.class
+web/springBootSecurityProject/models/User.class
+web/springBootSecurityProject/services/user/UserService.class
+web/springBootSecurityProject/repositories/RoleRepositories.class
+web/springBootSecurityProject/controllers/AuthController.class
+web/springBootSecurityProject/services/user/UserServiceImpl.class
+web/springBootSecurityProject/services/role/RoleService.class
+web/springBootSecurityProject/repositories/UserRepositories.class
+web/springBootSecurityProject/controllers/UserController.class
+web/springBootSecurityProject/TestSecurityAppApplication.class
+web/springBootSecurityProject/controllers/AdminController.class
+web/springBootSecurityProject/config/SecurityConfig.class
+web/springBootSecurityProject/services/role/RoleServiceImpl.class
+web/springBootSecurityProject/models/Role.class
