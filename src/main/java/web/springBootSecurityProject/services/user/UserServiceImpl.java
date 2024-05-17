@@ -1,6 +1,6 @@
 package web.springBootSecurityProject.services.user;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import web.springBootSecurityProject.models.Role;
@@ -16,15 +16,18 @@ import java.util.Optional;
 public class UserServiceImpl implements UserService {
     private final UserRepositories repositories;
     private final RoleService roleService;
-    @Autowired
-    public UserServiceImpl(UserRepositories repositories, RoleService roleService) {
+    private final PasswordEncoder passwordEncoder;
+
+    public UserServiceImpl(UserRepositories repositories, RoleService roleService, PasswordEncoder passwordEncoder) {
         this.repositories = repositories;
         this.roleService = roleService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Transactional
     @Override
     public void register(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         repositories.save(user);
     }
 
@@ -45,8 +48,12 @@ public class UserServiceImpl implements UserService {
 
     @Transactional
     @Override
-    public void update(int id, User user) {
+    public void update(int id, User user, String selectedRole) {
         user.setId(id);
+        Role role = roleService.findRoleByName(selectedRole);
+        roleService.save(role);
+        user.getRoles().add(role);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         repositories.save(user);
     }
 
@@ -58,31 +65,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void updatePassword(int id, String newPassword) {
-        User user = getUserById(id);
-        if (user != null) {
-            user.setPassword(newPassword);
-            repositories.save(user);
-        }
-    }
+        User user = repositories.findById(id).orElseThrow();
+        user.setPassword(passwordEncoder.encode(newPassword));
+        repositories.save(user);
 
-    @Transactional
-    @Override
-    public Role getUserRole(String selectedRole) {
-        if (selectedRole.equals("ADMIN")) {
-            return roleService.findRoleByName("ROLE_ADMIN")
-                    .orElseGet(() -> {
-                        Role role = new Role("ROLE_ADMIN");
-                        roleService.save(role);
-                        return role;
-                    });
-        } else {
-            return roleService.findRoleByName("USER")
-                    .orElseGet(() -> {
-                        Role role = new Role("ROLE_USER");
-                        roleService.save(role);
-                        return role;
-                    });
-        }
     }
-
 }

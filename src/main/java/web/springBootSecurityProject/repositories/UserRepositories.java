@@ -8,7 +8,6 @@ import web.springBootSecurityProject.models.User;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface UserRepositories extends JpaRepository<User, Integer> {
     @Query("SELECT  u FROM User u JOIN FETCH u.roles WHERE u.username = :username")
     Optional<User> findByUsername(String username);

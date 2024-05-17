@@ -1,14 +1,13 @@
 package web.springBootSecurityProject.controllers;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import web.springBootSecurityProject.models.Role;
 import web.springBootSecurityProject.models.User;
+import web.springBootSecurityProject.services.role.RoleService;
 import web.springBootSecurityProject.services.user.UserService;
-import web.springBootSecurityProject.util.UserValidator;
 
 import javax.validation.Valid;
 
@@ -16,12 +15,11 @@ import javax.validation.Valid;
 @RequestMapping("/admin")
 public class AdminController {
     private final UserService userService;
-    private final UserValidator validator;
+    private final RoleService roleService;
 
-    @Autowired
-    public AdminController(UserService userService, UserValidator validator) {
+    public AdminController(UserService userService, RoleService roleService) {
         this.userService = userService;
-        this.validator = validator;
+        this.roleService = roleService;
     }
 
     @GetMapping
@@ -30,14 +28,14 @@ public class AdminController {
         return "/admin/admin";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @DeleteMapping("/delete/{id}")
     public String deleteUser(@PathVariable("id") int id) {
         userService.deleteUserById(id);
         return "redirect:/admin";
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @GetMapping("/edit/{id}")
     public String editUser(@PathVariable("id") int id, Model model) {
         User user = userService.getUserById(id);
@@ -46,8 +44,8 @@ public class AdminController {
     }
 
     @PostMapping("/edit/{id}")
-    public String editSubmit(@PathVariable("id") int id, @ModelAttribute("user") User updateUser) {
-        userService.update(id, updateUser);
+    public String editSubmit(@PathVariable("id") int id, @ModelAttribute("user") User updateUser, @RequestParam("selectedRole") String selectedRole) {
+        userService.update(id, updateUser, selectedRole);
         return "redirect:/admin";
     }
 
@@ -62,11 +60,18 @@ public class AdminController {
             BindingResult bindingResult,
             @RequestParam("selectedRole") String selectedRole) {
 
-        validator.validate(user, bindingResult);
-        user.getRoles().add(userService.getUserRole(selectedRole));
+        if (bindingResult.hasErrors()) {
+            return "/admin/add";
+        }
+        Role role = roleService.findRoleByName(selectedRole);
+
+        roleService.save(role);
+        user.getRoles().add(role);
+
+        // Сохранить пользователя через сервис
         userService.register(user);
 
-        return bindingResult.hasErrors() ? "/admin/add" : "redirect:/admin";
+        return "redirect:/admin";
     }
 
 }

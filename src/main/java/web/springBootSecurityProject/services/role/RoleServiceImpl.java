@@ -5,8 +5,6 @@ import org.springframework.transaction.annotation.Transactional;
 import web.springBootSecurityProject.models.Role;
 import web.springBootSecurityProject.repositories.RoleRepositories;
 
-import java.util.Optional;
-
 @Transactional(readOnly = true)
 @Service
 public class RoleServiceImpl implements RoleService {
@@ -18,8 +16,11 @@ public class RoleServiceImpl implements RoleService {
     }
 
     @Override
-    public Optional<Role> findRoleByName(String name) {
-        return roleRepositories.findByRoleName(name);
+    public Role findRoleByName(String name) {
+        return roleRepositories.findByRoleName(name).orElseGet(() -> {
+            Role newRole = new Role(name);
+            return newRole;
+        });
     }
 
     @Transactional
